@@ -8,10 +8,10 @@ def get_mask_account(account_number: str) -> str:
     return f"**{account_number[-4:]}"
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 
-    card_number_str = '1234567890123456'
-    account_num = '12345678901234561234'
+    card_number_str = "1234567890123456"
+    account_num = "12345678901234561234"
 
     print(get_mask_card_number(card_number_str))
     print(get_mask_account(account_num))
