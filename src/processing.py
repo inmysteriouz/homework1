@@ -9,7 +9,9 @@ inform_state = [
 
 
 def filter_by_state(inform_state: list[dict[str, Any]], state_id: str = "EXECUTED") -> list[dict[str, Any]]:
-    """Функция фильтрации операции по ключу ssh"""
+    """Функция фильтрует операции по ключу,
+    принимает список словарей,
+    и возвращает новый список словарей по указанному ключу"""
     list_stat = []
     for key in inform_state:
         if key.get("state") == state_id:
@@ -21,7 +23,9 @@ print(filter_by_state(inform_state))
 
 
 def sort_by_date(inform_state: list[dict[str, Any]], reverse: bool = True) -> list[dict[str, Any]]:
-    """Функция сортировки операций по дате"""
+    """ Функция принимает список словарей,
+    задает порядок сортировки,
+    и возвращает новый список отсортированный по дате"""
     sorted_inform_state = sorted(inform_state, key=lambda inform_state: inform_state["date"], reverse=reverse)
     return sorted_inform_state
 
