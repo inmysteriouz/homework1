@@ -23,7 +23,7 @@ print(filter_by_state(inform_state))
 
 
 def sort_by_date(inform_state: list[dict[str, Any]], reverse: bool = True) -> list[dict[str, Any]]:
-    """ Функция принимает список словарей,
+    """Функция принимает список словарей,
     задает порядок сортировки,
     и возвращает новый список отсортированный по дате"""
     sorted_inform_state = sorted(inform_state, key=lambda inform_state: inform_state["date"], reverse=reverse)
