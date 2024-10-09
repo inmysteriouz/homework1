@@ -31,4 +31,3 @@ def sort_by_date(inform_state: list[dict[str, Any]], reverse: bool = True) -> li
 
 
 print(sort_by_date(inform_state))
-
