@@ -1,14 +1,28 @@
-from typing import List, Dict, Iterator
-
-Transaction = Dict[str, any]
-
-
-def filter_by_currency(transactions: List[Transaction], currency_code: str) -> Iterator[Transaction]:
+def filter_by_currency(transactions, currency_code):
     """
-    Функция фильтрует транзакции по коду валюты и возвращает итератор.
+    Генератор, который фильтрует транзакции по валюте.
     """
-    return (transaction for transaction in transactions
-            if transaction["operationAmount"]["currency"]["code"] == currency_code)
+    for transaction in transactions:
+        if (transaction.get("operationAmount", {}).get("currency", {}).get("code") == currency_code):
+            yield transaction
+
+
+def transaction_descriptions(transactions):
+    """
+    Генератор, который возвращает описание каждой транзакции.
+    """
+    for transaction in transactions:
+        yield transaction.get("description", "")
+
+
+def card_number_generator(start, end):
+    """
+    Генератор, который выдает номера банковских карт в формате XXXX XXXX XXXX XXXX.
+    """
+    for number in range(start, end + 1):
+        card_number = f"{number:016}"
+        formatted_card_number = f"{card_number[:4]} {card_number[4:8]} {card_number[8:12]} {card_number[12:]}"
+        yield formatted_card_number
 
 
 if __name__ == "__main__":
@@ -44,23 +58,32 @@ if __name__ == "__main__":
             "to": "Счет 75651667383060284188"
         },
         {
-            "id": 987654321,
-            "state": "PENDING",
-            "date": "2020-01-01T12:00:00",
+            "id": 328390539,
+            "state": "CANCELED",
+            "date": "2020-08-14T22:18:12.413234",
             "operationAmount": {
-                "amount": "500.00",
+                "amount": "12254.93",
                 "currency": {
                     "name": "EUR",
                     "code": "EUR"
                 }
             },
-            "description": "Оплата услуг",
-            "from": "Счет 123456789",
-            "to": "Счет 987654321"
+            "description": "Перевод на карту",
+            "from": "Счет 53623201863264283103",
+            "to": "Счет 58103214602020348139"
         }
     ]
 
+    print("Пример использования filter_by_currency:")
     usd_transactions = filter_by_currency(transactions, "USD")
-
     for _ in range(2):
         print(next(usd_transactions))
+
+    print("\nПример использования transaction_descriptions:")
+    descriptions = transaction_descriptions(transactions)
+    for _ in range(3):
+        print(next(descriptions))
+
+    print("\nПример использования card_number_generator:")
+    for card_number in card_number_generator(1, 5):
+        print(card_number)

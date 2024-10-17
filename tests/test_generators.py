@@ -1,95 +1,80 @@
 import pytest
-from src.generators import filter_by_currency
-
+from src.generators import filter_by_currency, transaction_descriptions, card_number_generator
 
 @pytest.fixture
-def transactions():
+def sample_transactions():
     return [
         {
-            "id": 939719570,
+            "id": 1,
             "state": "EXECUTED",
-            "date": "2018-06-30T02:08:58.425572",
+            "date": "2021-01-01T12:00:00",
             "operationAmount": {
-                "amount": "9824.07",
+                "amount": "100.00",
                 "currency": {
                     "name": "USD",
                     "code": "USD"
                 }
             },
-            "description": "Перевод организации",
-            "from": "Счет 75106830613657916952",
-            "to": "Счет 11776614605963066702"
+            "description": "Payment 1"
         },
         {
-            "id": 142264268,
-            "state": "EXECUTED",
-            "date": "2019-04-04T23:20:05.206878",
+            "id": 2,
+            "state": "CANCELED",
+            "date": "2021-01-02T12:00:00",
             "operationAmount": {
-                "amount": "79114.93",
-                "currency": {
-                    "name": "USD",
-                    "code": "USD"
-                }
-            },
-            "description": "Перевод со счета на счет",
-            "from": "Счет 19708645243227258542",
-            "to": "Счет 75651667383060284188"
-        },
-        {
-            "id": 987654321,
-            "state": "PENDING",
-            "date": "2020-01-01T12:00:00",
-            "operationAmount": {
-                "amount": "500.00",
+                "amount": "200.00",
                 "currency": {
                     "name": "EUR",
                     "code": "EUR"
                 }
             },
-            "description": "Оплата услуг",
-            "from": "Счет 123456789",
-            "to": "Счет 987654321"
+            "description": "Payment 2"
+        },
+        {
+            "id": 3,
+            "state": "EXECUTED",
+            "date": "2021-01-03T12:00:00",
+            "operationAmount": {
+                "amount": "300.00",
+                "currency": {
+                    "name": "USD",
+                    "code": "USD"
+                }
+            },
+            "description": "Payment 3"
         }
     ]
 
+def test_filter_by_currency_usd(sample_transactions):
+    usd_transactions = list(filter_by_currency(sample_transactions, "USD"))
+    assert len(usd_transactions) == 2
+    assert usd_transactions[0]["id"] == 1
+    assert usd_transactions[1]["id"] == 3
 
-def test_filter_by_currency_usd(transactions):
-    usd_transactions = filter_by_currency(transactions, "USD")
-    result = list(usd_transactions)
-
-    assert len(result) == 2
-    assert all(tx["operationAmount"]["currency"]["code"] == "USD" for tx in result)
-
-
-def test_filter_by_currency_no_matching(transactions):
-    gbp_transactions = filter_by_currency(transactions, "GBP")
-    result = list(gbp_transactions)
-
-    assert len(result) == 0
-
+def test_filter_by_currency_no_transactions(sample_transactions):
+    jpy_transactions = list(filter_by_currency(sample_transactions, "JPY"))
+    assert len(jpy_transactions) == 0
 
 def test_filter_by_currency_empty_list():
     empty_transactions = []
-    usd_transactions = filter_by_currency(empty_transactions, "USD")
+    filtered = list(filter_by_currency(empty_transactions, "USD"))
+    assert len(filtered) == 0
 
-    result = list(usd_transactions)
-    assert len(result) == 0
+def test_transaction_descriptions(sample_transactions):
+    descriptions = list(transaction_descriptions(sample_transactions))
+    assert descriptions == ["Payment 1", "Payment 2", "Payment 3"]
 
+def test_transaction_descriptions_empty_list():
+    descriptions = list(transaction_descriptions([]))
+    assert descriptions == []
 
-def test_filter_by_currency_no_currency_match(transactions):
-    jpy_transactions = filter_by_currency(transactions, "JPY")
-
-    result = list(jpy_transactions)
-    assert len(result) == 0
-
-
-@pytest.mark.parametrize("currency, expected_count", [
-    ("USD", 2),
-    ("EUR", 1),
-    ("JPY", 0)
+@pytest.mark.parametrize("start,end,expected", [
+    (1, 3, ["0000 0000 0000 0001", "0000 0000 0000 0002", "0000 0000 0000 0003"]),
+    (9999, 10001, ["0000 0000 0000 9999", "0000 0000 0001 0000", "0000 0000 0001 0001"])
 ])
-def test_filter_by_currency_parametrized(transactions, currency, expected_count):
-    filtered_transactions = filter_by_currency(transactions, currency)
-    result = list(filtered_transactions)
+def test_card_number_generator(start, end, expected):
+    assert list(card_number_generator(start, end)) == expected
 
-    assert len(result) == expected_count
+def test_card_number_generator_single_value():
+    result = list(card_number_generator(1, 1))
+    assert result == ["0000 0000 0000 0001"]
