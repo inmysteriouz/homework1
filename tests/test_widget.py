@@ -3,7 +3,6 @@ import pytest
 from src.widget import get_date, mask_account_card
 
 
-# Фикстура для тестов
 @pytest.fixture
 def account_card_data() -> list[tuple[str, str]]:
     return [
@@ -16,8 +15,8 @@ def account_card_data() -> list[tuple[str, str]]:
 @pytest.mark.parametrize(
     "number, expected",
     [
-        ("Maestro: 1234 5678 9012 3456", "Maestro: 1234 56** **** 3456"),  # Маскировка карты с пробелами
-        ("Invalid input", "Invalid input"),  # Некорректный ввод, который должен вернуться без изменений
+        ("Maestro: 1234 5678 9012 3456", "Maestro: 1234 56** **** 3456"),
+        ("Invalid input", "Invalid input"),
     ],
 )
 def test_mask_account_card(number: str, expected: str) -> None:
@@ -27,8 +26,8 @@ def test_mask_account_card(number: str, expected: str) -> None:
 @pytest.mark.parametrize(
     "date_info, expected",
     [
-        ("2024-03-11T02:26:18.671407", "11.03.2024"),  # Корректная дата
-        ("Invalid date", ""),  # Некорректная дата, ожидаем пустую строку
+        ("2024-03-11T02:26:18.671407", "11.03.2024"),
+        ("Invalid date", ""),
     ],
 )
 def test_get_date(date_info: str, expected: str) -> None:
